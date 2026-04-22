@@ -10,11 +10,12 @@ This workspace keeps grouped product paths intact and uses the parent repo only 
 | `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` | yes, if owned by that repo |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` | yes, if owned by that repo |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` | yes, if owned by that repo |
+| `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` | yes, if owned by that repo |
 | parent root docs/config | plain parent content | parent aggregator repo | no parent-managed nesting here |
 
 ## Parent Repo Contract
 
-- The parent repo tracks only the four child repo pointers plus minimal bootstrap/docs content.
+- The parent repo tracks only the five child repo pointers plus minimal bootstrap/docs content.
 - The parent repo does not replace child histories or combine them into one root history.
 - Product repos own their own packaging and release flows.
 - Packaged ZIPs are published through per-repo GitHub Releases, not checked into this parent repo.

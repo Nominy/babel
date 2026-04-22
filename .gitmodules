@@ -10,3 +10,7 @@
 [submodule "drafting/gold-drafting-extension"]
 	path = drafting/gold-drafting-extension
 	url = https://github.com/Nominy/babel-gold-drafting-extension.git
+[submodule "shared/babel-extension-platform"]
+	path = shared/babel-extension-platform
+	url = https://github.com/Nominy/babel-extension-platform.git
+	branch = codex/shared-extension-platform
