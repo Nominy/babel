@@ -1,24 +1,19 @@
 # Babel Workspace Aggregator
 
-This repository is the parent workspace for the Babel projects in this directory.
+This repository is the thin parent workspace for the durable Babel product stack.
 
-It is an aggregator and navigation layer, not the canonical home of most code histories.
-Child repositories keep their own commits, remotes, release flows, and nested ownership where needed.
+It is an aggregator and navigation layer, not the canonical home of the product histories.
+Child repositories keep their own commits, remotes, release flows, and ownership.
 
 ## Layout
 
 | Path | Type | Canonical Source Of Truth |
 | --- | --- | --- |
-| `tools/` | remote-backed submodule | `Nominy/babel-tools` |
 | `babel-helper-extension-repo/` | remote-backed submodule | `Nominy/babel-helper-extension` |
+| `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
-| `prototyping/` | remote-backed submodule | `Nominy/audio-segmentation-editor` |
-| `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` |
-| `reviewer/` wrapper content outside the two repos | plain parent content | this aggregator repo |
-| `drafting/` wrapper content outside `gold-drafting-extension/` | plain parent content | this aggregator repo |
-| `counter/` | plain parent content | this aggregator repo |
-| root docs/config | plain parent content | this aggregator repo |
+| wrapper docs/config (`README.md`, `.gitmodules`, `docs/`) | plain parent content | this aggregator repo |
 
 ## Bootstrap
 
@@ -36,10 +31,11 @@ git submodule sync --recursive
 git submodule update --init --recursive
 ```
 
-## Notes
+## Archive Contract
 
-- `reviewer/` and `drafting/` intentionally remain grouped wrapper directories. The parent owns only the wrapper content outside their child repos.
-- `tools/babel-helper-extension/` remains archive/history content inside the `tools` repo for now. The canonical helper extension repo is `babel-helper-extension-repo/`.
+- Non-product material lives outside this git workspace under `C:\Users\User\Desktop\dev\babel-archive\`.
+- Packaged extension ZIPs do not belong in this parent repo or in wrapper folders. The canonical distributables now live in per-repo GitHub Releases.
+- `reviewer/` and `drafting/` stay only as grouping directories for the child repos above.
 - Child repos may own their own nested submodules when that structure belongs to the child. The parent should always bootstrap with `--recursive`.
 
 See [`docs/repo-map.md`](docs/repo-map.md) for the ownership rules in one place.
