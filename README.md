@@ -13,8 +13,8 @@ Child repositories keep their own commits, remotes, release flows, and nested ow
 | `babel-helper-extension-repo/` | remote-backed submodule | `Nominy/babel-helper-extension` |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
-| `prototyping/` | local-only submodule | local repo in this workspace |
-| `drafting/gold-drafting-extension/` | local-only submodule | local repo in this workspace |
+| `prototyping/` | remote-backed submodule | `Nominy/audio-segmentation-editor` |
+| `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` |
 | `reviewer/` wrapper content outside the two repos | plain parent content | this aggregator repo |
 | `drafting/` wrapper content outside `gold-drafting-extension/` | plain parent content | this aggregator repo |
 | `counter/` | plain parent content | this aggregator repo |
@@ -29,14 +29,7 @@ git clone <this-repo> babel
 cd babel
 git submodule update --init --recursive
 ```
-
-If your Git install blocks local `file:///` submodule URLs for the local-only repos, run:
-
-```powershell
-git -c protocol.file.allow=always submodule update --init --recursive
-```
-
-If any local-only submodule moves to a new path or remote later, update the URL and run:
+If any child repo moves to a new path or remote later, update the URL and run:
 
 ```powershell
 git submodule sync --recursive
@@ -47,7 +40,6 @@ git submodule update --init --recursive
 
 - `reviewer/` and `drafting/` intentionally remain grouped wrapper directories. The parent owns only the wrapper content outside their child repos.
 - `tools/babel-helper-extension/` remains archive/history content inside the `tools` repo for now. The canonical helper extension repo is `babel-helper-extension-repo/`.
-- The local-only submodules currently use machine-local `file:///` URLs. If this workspace moves or those repos get real remotes later, update `.gitmodules` and resync submodule config.
 - Child repos may own their own nested submodules when that structure belongs to the child. The parent should always bootstrap with `--recursive`.
 
 See [`docs/repo-map.md`](docs/repo-map.md) for the ownership rules in one place.

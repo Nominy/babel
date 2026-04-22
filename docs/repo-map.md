@@ -10,8 +10,8 @@ This workspace keeps grouped paths intact and uses the parent repo only as an ag
 | `babel-helper-extension-repo/` | remote-backed submodule | `Nominy/babel-helper-extension` | yes, if owned by that repo |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` | yes, if owned by that repo |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` | yes, if owned by that repo |
-| `prototyping/` | local-only submodule | local repo in this workspace | yes, if the repo later needs them |
-| `drafting/gold-drafting-extension/` | local-only submodule | local repo in this workspace | yes, if the repo later needs them |
+| `prototyping/` | remote-backed submodule | `Nominy/audio-segmentation-editor` | yes, if the repo later needs them |
+| `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` | yes, if the repo later needs them |
 | `reviewer/` outside child repos | plain parent content | parent aggregator repo | no parent-managed nesting here |
 | `drafting/` outside `gold-drafting-extension/` | plain parent content | parent aggregator repo | no parent-managed nesting here |
 | `counter/` | plain parent content | parent aggregator repo | no |
@@ -31,10 +31,4 @@ This workspace keeps grouped paths intact and uses the parent repo only as an ag
 
 ```powershell
 git submodule update --init --recursive
-```
-
-- For the current local-only submodules, `file:///` URLs point at this machine's workspace paths. If Git blocks the file transport, use:
-
-```powershell
-git -c protocol.file.allow=always submodule update --init --recursive
 ```

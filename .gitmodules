@@ -12,7 +12,7 @@
 	url = https://github.com/Nominy/review-extension
 [submodule "prototyping"]
 	path = prototyping
-	url = file:///C:/Users/User/Desktop/dev/babel/prototyping
+	url = https://github.com/Nominy/audio-segmentation-editor.git
 [submodule "drafting/gold-drafting-extension"]
 	path = drafting/gold-drafting-extension
-	url = file:///C:/Users/User/Desktop/dev/babel/drafting/gold-drafting-extension
+	url = https://github.com/Nominy/babel-gold-drafting-extension.git
