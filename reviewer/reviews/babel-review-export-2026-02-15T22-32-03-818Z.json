@@ -1,0 +1,43 @@
+{
+  "exportedAt": "2026-02-15T22:32:03.816Z",
+  "sourceUrl": "https://dashboard.babel.audio/transcription/RU-transcription?reviewActionId=41f2cb17-bd28-4fcb-a267-6d9000c979da&displayFeedback=true",
+  "pageTitle": "Babel Audio - Global Conversational Platform",
+  "summary": {
+    "textareaCount": 34,
+    "categoryCount": 5,
+    "hasAdditionalFeedback": false
+  },
+  "categories": [
+    {
+      "category": "Word Accuracy",
+      "description": "Accuracy of transcribed words and phrases",
+      "rating": 3,
+      "comment": "Обрати внимание на разницу между \"угу\" и \"мгм\". Слово \"чтоб\" допускается словарём, не бойся им пользоваться! Рекомендуется писать \"телеграм-группы\". Слово \"диссонанс\" существует. Пропущены: то есть, знаешь. Не бойся писать то, что слышишь, даже если это звучит неуместно (если спикер говорит \"оно\", например вместо \"она\")."
+    },
+    {
+      "category": "Timestamp Accuracy",
+      "description": "Precision of segment start/end times",
+      "rating": 2,
+      "comment": "Рекомендуем отрезать вздохи и лишнюю тишину в начале и конце сегмента. В помощь тебе горячие клавиши и зум на 100 %!"
+    },
+    {
+      "category": "Punctuation & Formatting",
+      "description": "Correct use of punctuation and text formatting",
+      "rating": 2,
+      "comment": "Обрати внимание на особенности выделения запятыми слов \"вот\", \"там\", \"главное\". Не бойся использовать двоеточие (\"ты такая: на меня надавили\") и точки, чтобы разделять эти бесконечные предложения:)."
+    },
+    {
+      "category": "Tags & Emphasis",
+      "description": "Proper use of speaker tags and emphasis markers",
+      "rating": 2,
+      "comment": "Видно, что ты понимаешь, как пользоваться тэгами {СКАЗ: } и  {ИСКАЖ: }, молодец! Но в одном месте СКАЗ внутри скобок был пропущен."
+    },
+    {
+      "category": "Segmentation",
+      "description": "Appropriate segment breaks and grouping",
+      "rating": 2,
+      "comment": "Неплохо, но пропущена одна пауза длиной в секунду. Сегмент должен быть разделён."
+    }
+  ],
+  "additionalFeedback": ""
+}

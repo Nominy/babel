@@ -1,0 +1,18 @@
+[submodule "tools"]
+	path = tools
+	url = https://github.com/Nominy/babel-tools.git
+[submodule "babel-helper-extension-repo"]
+	path = babel-helper-extension-repo
+	url = https://github.com/Nominy/babel-helper-extension.git
+[submodule "reviewer/review-backend"]
+	path = reviewer/review-backend
+	url = https://github.com/Nominy/review-backend
+[submodule "reviewer/review-interceptor-extension"]
+	path = reviewer/review-interceptor-extension
+	url = https://github.com/Nominy/review-extension
+[submodule "prototyping"]
+	path = prototyping
+	url = file:///C:/Users/User/Desktop/dev/babel/prototyping
+[submodule "drafting/gold-drafting-extension"]
+	path = drafting/gold-drafting-extension
+	url = file:///C:/Users/User/Desktop/dev/babel/drafting/gold-drafting-extension

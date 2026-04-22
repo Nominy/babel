@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babel Review Debugger</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <section class="hero panel">
+      <div>
+        <p class="eyebrow">Review Feedback Debugger</p>
+        <h1>Babel Review Report Simulator</h1>
+        <p class="sub">Inspect live runs and protected history. Compare segmentation, row-level text, generated prompts, templates, and metrics from the same backend logic the extension uses.</p>
+      </div>
+      <div class="hero-note">
+        <div class="hero-chip">Debug prompt construction</div>
+        <div class="hero-chip">Inspect split / merge behavior</div>
+        <div class="hero-chip">Load past reviews from analytics log</div>
+      </div>
+    </section>
+
+    <section class="panel controls">
+      <div class="field-group">
+        <label for="backendUrl">Backend Base URL</label>
+        <input id="backendUrl" type="text" value="http://127.0.0.1:3001">
+      </div>
+      <div class="field-group">
+        <label for="reviewActionId">Review Action ID</label>
+        <input id="reviewActionId" type="text" placeholder="auto from state or history">
+      </div>
+      <div class="field-group">
+        <label for="historyUsername">History Basic Auth Username</label>
+        <input id="historyUsername" type="text" placeholder="same as templates lab">
+      </div>
+      <div class="field-group">
+        <label for="historyPassword">History Basic Auth Password</label>
+        <input id="historyPassword" type="password" placeholder="same as templates lab">
+      </div>
+      <div class="button-row">
+        <button id="demoBtn" type="button" class="secondary">Load Demo</button>
+        <button id="prepareBtn" type="button" class="ghost">Prepare Only</button>
+        <button id="generateBtn" type="button">Generate LLM Review</button>
+      </div>
+      <div class="status" id="status">Ready.</div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel history-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Protected History</p>
+            <h2>Past Reviews</h2>
+          </div>
+          <button id="historyRefreshBtn" type="button" class="ghost compact">Refresh</button>
+        </div>
+        <div class="history-filters">
+          <div class="field-group">
+            <label for="historySearch">Search</label>
+            <input id="historySearch" type="text" placeholder="action id, text, template id">
+          </div>
+          <div class="field-group">
+            <label for="historyEventType">Event Type</label>
+            <select id="historyEventType">
+              <option value="">All events</option>
+              <option value="review_generate">review_generate</option>
+              <option value="submit_transcript_review_action">submit_transcript_review_action</option>
+            </select>
+          </div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </aside>
+
+      <main class="main-column">
+        <section class="panel input-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">States</p>
+              <h2>Original vs Current</h2>
+            </div>
+          </div>
+          <div class="input-grid">
+            <div>
+              <label for="originalInput">ORIGINAL JSON</label>
+              <input id="originalFile" type="file" accept=".json,application/json,text/plain">
+              <textarea id="originalInput"></textarea>
+            </div>
+            <div>
+              <label for="currentInput">CURRENT JSON</label>
+              <input id="currentFile" type="file" accept=".json,application/json,text/plain">
+              <textarea id="currentInput"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>Run Summary</h2>
+            </div>
+            <div class="context-meta" id="contextMeta"></div>
+          </div>
+          <div class="metric-grid" id="metricGrid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Feedback</p>
+              <h2>LLM Output</h2>
+            </div>
+          </div>
+          <div id="feedbackCards" class="feedback-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Change List</p>
+              <h2>Extracted Changes &amp; Classifications</h2>
+            </div>
+          </div>
+          <div class="change-list-summary" id="changeListSummary"></div>
+          <div id="changeListCards" class="change-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Segmentation</p>
+              <h2>Structure Diff</h2>
+            </div>
+          </div>
+          <div id="segmentationSummary" class="segmentation-summary"></div>
+          <div id="segmentationEvents" class="event-list"></div>
+          <div class="lane-grid" id="segmentLanes"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Text Rows</p>
+              <h2>Initial / Final / Diff</h2>
+            </div>
+          </div>
+          <div id="textDiffRows" class="row-diff-list"></div>
+        </section>
+
+        <section class="panel dual-panel">
+          <div>
+            <div class="section-head mini">
+              <div>
+                <p class="eyebrow">Prompt</p>
+                <h2>Full LLM Prompt</h2>
+              </div>
+            </div>
+            <pre id="promptOut">No prompt loaded.</pre>
+          </div>
+          <div>
+            <div class="section-head mini">
+              <div>
+                <p class="eyebrow">Metrics</p>
+                <h2>Generated Data</h2>
+              </div>
+            </div>
+            <div class="metrics-stack" id="metricsDump"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head mini">
+            <div>
+              <p class="eyebrow">Raw</p>
+              <h2>Backend / History Payload</h2>
+            </div>
+          </div>
+          <pre id="rawOut">{}</pre>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

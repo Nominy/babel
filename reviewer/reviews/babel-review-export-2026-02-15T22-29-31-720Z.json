@@ -1,0 +1,43 @@
+{
+  "exportedAt": "2026-02-15T22:29:31.718Z",
+  "sourceUrl": "https://dashboard.babel.audio/transcription/RU-transcription?reviewActionId=7b6dc8fe-3499-4430-913e-69a685948bfe&displayFeedback=true",
+  "pageTitle": "Babel Audio - Global Conversational Platform",
+  "summary": {
+    "textareaCount": 20,
+    "categoryCount": 5,
+    "hasAdditionalFeedback": false
+  },
+  "categories": [
+    {
+      "category": "Word Accuracy",
+      "description": "Accuracy of transcribed words and phrases",
+      "rating": 2,
+      "comment": "Пропущены мелкие междометия, частицы и два слова. Также местами неправильно прописаны \"а\" и \"э\". Пожалуйста, прислушивайся к разнице - это важно."
+    },
+    {
+      "category": "Timestamp Accuracy",
+      "description": "Precision of segment start/end times",
+      "rating": 1,
+      "comment": "В целом хорошая работа. Но не забывай пользоваться зумом, чтобы проверять окончания звуковой дорожки точнее."
+    },
+    {
+      "category": "Punctuation & Formatting",
+      "description": "Correct use of punctuation and text formatting",
+      "rating": 1,
+      "comment": "Хорошая работа. Но следи, пожалуйста, за оформлением слов с дефисом и двойным тире."
+    },
+    {
+      "category": "Tags & Emphasis",
+      "description": "Proper use of speaker tags and emphasis markers",
+      "rating": 2,
+      "comment": "Тег {ИСКАЖ: } не был поставлен там, где слово произнесено с ошибкой.\n\"Пасибо\" нет такого слова."
+    },
+    {
+      "category": "Segmentation",
+      "description": "Appropriate segment breaks and grouping",
+      "rating": 1,
+      "comment": "Отличная работа с сегментами."
+    }
+  ],
+  "additionalFeedback": ""
+}

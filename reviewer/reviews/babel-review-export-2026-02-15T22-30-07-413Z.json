@@ -1,0 +1,43 @@
+{
+  "exportedAt": "2026-02-15T22:30:07.412Z",
+  "sourceUrl": "https://dashboard.babel.audio/transcription/RU-transcription?reviewActionId=0b726acd-8e85-4c85-8289-28d56fabc8cc&displayFeedback=true",
+  "pageTitle": "Babel Audio - Global Conversational Platform",
+  "summary": {
+    "textareaCount": 8,
+    "categoryCount": 5,
+    "hasAdditionalFeedback": false
+  },
+  "categories": [
+    {
+      "category": "Word Accuracy",
+      "description": "Accuracy of transcribed words and phrases",
+      "rating": 2,
+      "comment": "Постарайтесь не упускать междометия."
+    },
+    {
+      "category": "Timestamp Accuracy",
+      "description": "Precision of segment start/end times",
+      "rating": 1,
+      "comment": "Спасибо, хорошо!"
+    },
+    {
+      "category": "Punctuation & Formatting",
+      "description": "Correct use of punctuation and text formatting",
+      "rating": 1,
+      "comment": "Спасибо, хорошо!"
+    },
+    {
+      "category": "Tags & Emphasis",
+      "description": "Proper use of speaker tags and emphasis markers",
+      "rating": 1,
+      "comment": "Спасибо, хорошо!"
+    },
+    {
+      "category": "Segmentation",
+      "description": "Appropriate segment breaks and grouping",
+      "rating": 1,
+      "comment": "Спасибо, хорошо!"
+    }
+  ],
+  "additionalFeedback": ""
+}
