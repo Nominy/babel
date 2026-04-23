@@ -19,7 +19,7 @@ This workspace keeps grouped product paths intact and uses the parent repo only 
 - The parent repo does not replace child histories or combine them into one root history.
 - Product repos own their own packaging and release flows.
 - Packaged ZIPs are published through per-repo GitHub Releases, not checked into this parent repo.
-- Non-product experiments, exports, old ZIPs, screenshots, and similar archive material live under `C:\Users\User\Desktop\dev\babel-archive\`, not in this workspace.
+- Non-product experiments, exports, old ZIPs, screenshots, and similar archive material live in a local archive directory, not in this workspace.
 - When cloning the parent repo, initialize submodules recursively:
 
 ```powershell

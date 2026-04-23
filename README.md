@@ -34,7 +34,7 @@ git submodule update --init --recursive
 
 ## Archive Contract
 
-- Non-product material lives outside this git workspace under `C:\Users\User\Desktop\dev\babel-archive\`.
+- Non-product material lives outside this git workspace in a local archive directory.
 - Packaged extension ZIPs do not belong in this parent repo or in wrapper folders. The canonical distributables now live in per-repo GitHub Releases.
 - `reviewer/`, `drafting/`, and `shared/` stay only as grouping directories for the child repos above.
 - Child repos may own their own nested submodules when that structure belongs to the child. The parent should always bootstrap with `--recursive`.
