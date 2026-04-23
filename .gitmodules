@@ -13,4 +13,4 @@
 [submodule "shared/babel-extension-platform"]
 	path = shared/babel-extension-platform
 	url = https://github.com/Nominy/babel-extension-platform.git
-	branch = codex/shared-extension-platform
+	branch = main
