@@ -1,0 +1,52 @@
+name: Update submodule pointers
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-submodule-pointers
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out parent repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Configure commit identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update submodules to main HEAD
+        run: |
+          set -euo pipefail
+          git submodule sync --recursive
+          git submodule update --init --recursive --remote
+
+      - name: Commit pointer changes
+        run: |
+          set -euo pipefail
+          if git diff --quiet --submodule=short; then
+            echo "Submodule pointers already match their configured main branches."
+            exit 0
+          fi
+
+          git status --short
+          git add .gitmodules \
+            babel-helper-extension-repo \
+            drafting/gold-drafting-extension \
+            reviewer/review-backend \
+            reviewer/review-interceptor-extension \
+            shared/babel-extension-platform
+          git commit -m "Update submodule pointers to main HEAD"
+          git push origin HEAD:main

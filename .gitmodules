@@ -1,15 +1,19 @@
 [submodule "babel-helper-extension-repo"]
 	path = babel-helper-extension-repo
 	url = https://github.com/Nominy/babel-helper-extension.git
+	branch = main
 [submodule "reviewer/review-backend"]
 	path = reviewer/review-backend
 	url = https://github.com/Nominy/review-backend
+	branch = main
 [submodule "reviewer/review-interceptor-extension"]
 	path = reviewer/review-interceptor-extension
 	url = https://github.com/Nominy/review-extension
+	branch = main
 [submodule "drafting/gold-drafting-extension"]
 	path = drafting/gold-drafting-extension
 	url = https://github.com/Nominy/babel-gold-drafting-extension.git
+	branch = main
 [submodule "shared/babel-extension-platform"]
 	path = shared/babel-extension-platform
 	url = https://github.com/Nominy/babel-extension-platform.git
