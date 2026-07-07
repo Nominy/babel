@@ -3,3 +3,27 @@ Thumbs.db
 reviewer/key
 .superpowers/
 /tools/
+
+# Local browser/probe artifacts
+/all-visible-silence-runs-*.json
+/auto-seg-*.json
+/babel-*.md
+/babel-*.png
+/babel-*.txt
+/bridge-wait-*.json
+/chrome-extensions-snapshot.txt
+/chunk*.js
+/chunk*.json
+/client-lint-*.json
+/current-draft-*
+/dashboard-*.json
+/fiber-*.json
+/live-*.json
+/magnifier-*.json
+/native-*.json
+/outer-*.json
+/overlap-*.json
+/parent-fn-*.json
+/react-*.json
+/row*-*.json
+/webpack-module-*.json
