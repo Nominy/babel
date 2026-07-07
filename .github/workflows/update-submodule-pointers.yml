@@ -42,11 +42,7 @@ jobs:
           fi
 
           git status --short
-          git add .gitmodules \
-            babel-helper-extension-repo \
-            drafting/gold-drafting-extension \
-            reviewer/review-backend \
-            reviewer/review-interceptor-extension \
-            shared/babel-extension-platform
+          mapfile -t submodule_paths < <(git config --file .gitmodules --get-regexp '^submodule\..*\.path$' | cut -d' ' -f2-)
+          git add .gitmodules "${submodule_paths[@]}"
           git commit -m "Update submodule pointers to main HEAD"
           git push origin HEAD:main
