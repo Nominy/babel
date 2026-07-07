@@ -18,11 +18,3 @@
 	path = shared/babel-extension-platform
 	url = https://github.com/Nominy/babel-extension-platform.git
 	branch = main
-[submodule "audio/audio-overlap-backend"]
-	path = audio/audio-overlap-backend
-	url = https://github.com/Nominy/babel-audio-overlap-backend.git
-	branch = main
-[submodule "audio/audio-overlap-extension"]
-	path = audio/audio-overlap-extension
-	url = https://github.com/Nominy/babel-audio-overlap-extension.git
-	branch = main

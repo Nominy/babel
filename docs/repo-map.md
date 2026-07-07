@@ -11,8 +11,6 @@ This workspace keeps grouped product paths intact and uses the parent repo only 
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` | yes, if owned by that repo |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` | yes, if owned by that repo |
 | `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` | yes, if owned by that repo |
-| `audio/audio-overlap-backend/` | remote-backed submodule | `Nominy/babel-audio-overlap-backend` | yes, if owned by that repo |
-| `audio/audio-overlap-extension/` | remote-backed submodule | `Nominy/babel-audio-overlap-extension` | yes, if owned by that repo |
 | parent root docs/config | plain parent content | parent aggregator repo | no parent-managed nesting here |
 
 ## Parent Repo Contract

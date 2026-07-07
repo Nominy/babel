@@ -14,8 +14,6 @@ Child repositories keep their own commits, remotes, release flows, and ownership
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
 | `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` |
-| `audio/audio-overlap-backend/` | remote-backed submodule | `Nominy/babel-audio-overlap-backend` |
-| `audio/audio-overlap-extension/` | remote-backed submodule | `Nominy/babel-audio-overlap-extension` |
 | wrapper docs/config (`README.md`, `.gitmodules`, `docs/`) | plain parent content | this aggregator repo |
 
 ## Bootstrap
