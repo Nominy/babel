@@ -11,6 +11,7 @@ Child repositories keep their own commits, remotes, release flows, and ownership
 | --- | --- | --- |
 | `babel-helper-extension-repo/` | remote-backed submodule | `Nominy/babel-helper-extension` |
 | `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` |
+| `drafting/l0-draft-engine/` | remote-backed submodule | `Nominy/babel-l0-draft-engine` |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
 | `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` |
