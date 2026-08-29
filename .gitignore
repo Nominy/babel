@@ -3,6 +3,8 @@ Thumbs.db
 reviewer/key
 .superpowers/
 /tools/
+/.omp/
+/audio/
 
 # Local browser/probe artifacts
 /all-visible-silence-runs-*.json

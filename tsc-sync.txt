@@ -1,0 +1,1 @@
+src/content/website-appearance-panel.ts(713,3): error TS2741: Property 'sync' is missing in type '{ dispose(): void; open: () => void; close: () => void; toggle: () => void; }' but required in type 'WebsiteAppearancePanel'.
