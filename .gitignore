@@ -5,6 +5,7 @@ reviewer/key
 /tools/
 /.omp/
 /audio/
+/babel-helper-gating/
 
 # Local browser/probe artifacts
 /all-visible-silence-runs-*.json

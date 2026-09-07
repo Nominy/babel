@@ -1,0 +1,27 @@
+{
+  "name": "babel-review-grader-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "build:zip": "npm run build && node scripts/pack.mjs"
+  },
+  "dependencies": {
+    "@nominy/babel-babel-runtime": "file:../../shared/babel-extension-platform/packages/babel-babel-runtime",
+    "@nominy/babel-extension-frontend": "file:../../shared/babel-extension-platform/packages/babel-extension-frontend"
+  },
+  "devDependencies": {
+    "@nominy/babel-extension-build": "file:../../shared/babel-extension-platform/packages/babel-extension-build",
+    "@types/chrome": "^0.1.24",
+    "@types/node": "^24.6.0",
+    "@types/jsdom": "^21.1.7",
+    "esbuild": "^0.25.10",
+    "jsdom": "^26.1.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3"
+  }
+}

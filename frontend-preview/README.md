@@ -35,3 +35,9 @@ scrollbars. Symmetric stable gutters now keep every shell at x=480, y=20,
 width=640 and every title at x=497, y=33 on a 1600x1000 viewport. Coordinate
 comparison, scroll/no-scroll stability and narrow viewport checks pass.
 All actual unpacked builds were refreshed after this fix.
+
+Review Grader addon: `review-grader.png` shows the separate grade preview with
+synthetic local inference. Integration checks cover applying five ratings while
+preserving notes, missing Review Helper, an older backend, and stale transcripts.
+
+Template Lab: review-lab-home.png shows the Dashboard, review-lab-native.png shows the full-width Babel editor, and review-lab.png shows the slide-out Review studio. review-lab-compare.png shows draggable, resizable original/tuned response panels beside prompt editing and exact composed context. The key panel is available only through Settings; the template library has its own section. Stage persists an iteration in browser storage and Publish activates that staged version for everyone. These screenshots use synthetic archived tasks and explicitly stubbed model responses. Browser checks cover key sharing, navigation, Stage/Publish isolation, persisted layouts, both workflows, template selection, mobile focus, native rendering, waveform decoding, and audio playback. Older archived tasks without a saved recording URL remain text-only.

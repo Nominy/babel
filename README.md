@@ -14,6 +14,7 @@ Child repositories keep their own commits, remotes, release flows, and ownership
 | `drafting/l0-draft-engine/` | remote-backed submodule | `Nominy/babel-l0-draft-engine` |
 | `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
 | `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
+| `reviewer/babel-review-grader-extension/` | standalone addon package | `Nominy/babel` (this workspace) |
 | `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` |
 | wrapper docs/config (`README.md`, `.gitmodules`, `docs/`) | plain parent content | this aggregator repo |
 
@@ -37,7 +38,7 @@ git submodule update --init --recursive
 
 - Non-product material lives outside this git workspace in a local archive directory.
 - Packaged extension ZIPs do not belong in this parent repo or in wrapper folders. The canonical distributables now live in per-repo GitHub Releases.
-- `reviewer/`, `drafting/`, and `shared/` stay only as grouping directories for the child repos above.
+- `reviewer/`, `drafting/`, and `shared/` group the products above. Review Grader source lives in this repository; it has no separate release or store publishing flow.
 - Child repos may own their own nested submodules when that structure belongs to the child. The parent should always bootstrap with `--recursive`.
 
 See [`docs/repo-map.md`](docs/repo-map.md) for the ownership rules in one place.

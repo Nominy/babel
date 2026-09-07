@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Babel Review Grader",
+  "version": "0.1.0",
+  "description": "Generate evidence-based category grades with Babel Review Helper. Preview and apply ratings while preserving feedback notes.",
+  "permissions": [],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Babel Review Grader",
+    "default_popup": "options.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://dashboard.babel.audio/*"
+      ],
+      "js": [
+        "dist/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
