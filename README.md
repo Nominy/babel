@@ -1,44 +1,48 @@
-# Babel Workspace Aggregator
-
-This repository is the thin parent workspace for the durable Babel product stack.
-
-It is an aggregator and navigation layer, not the canonical home of the product histories.
-Child repositories keep their own commits, remotes, release flows, and ownership.
-
-## Layout
-
-| Path | Type | Canonical Source Of Truth |
-| --- | --- | --- |
-| `babel-helper-extension-repo/` | remote-backed submodule | `Nominy/babel-helper-extension` |
-| `drafting/gold-drafting-extension/` | remote-backed submodule | `Nominy/babel-gold-drafting-extension` |
-| `drafting/l0-draft-engine/` | remote-backed submodule | `Nominy/babel-l0-draft-engine` |
-| `reviewer/review-backend/` | remote-backed submodule | `Nominy/review-backend` |
-| `reviewer/review-interceptor-extension/` | remote-backed submodule | `Nominy/review-extension` |
-| `reviewer/babel-review-grader-extension/` | standalone addon package | `Nominy/babel` (this workspace) |
-| `shared/babel-extension-platform/` | remote-backed submodule | `Nominy/babel-extension-platform` |
-| wrapper docs/config (`README.md`, `.gitmodules`, `docs/`) | plain parent content | this aggregator repo |
+# Babel
 
 ## Bootstrap
 
-Fresh setup from the parent repo:
+Install Git, Node.js 22.14+ with npm, and Bun 1.3+ for the backend. From PowerShell:
 
 ```powershell
-git clone <this-repo> babel
+git clone --recurse-submodules https://github.com/Nominy/babel.git
 cd babel
+# Existing checkout:
 git submodule update --init --recursive
+
+npm --prefix shared/babel-extension-platform ci
+npm --prefix babel-helper-extension-repo ci
+npm --prefix drafting/gold-drafting-extension ci
+npm --prefix reviewer/review-interceptor-extension ci
+npm --prefix reviewer/babel-review-grader-extension ci
+bun install --cwd reviewer/review-backend
 ```
-If any child repo moves to a new path or remote later, update the URL and run:
+
+## Build and load extensions
+
+Run from this directory. Enable Developer mode in `chrome://extensions`, then load the indicated folder unpacked.
+
+| Product | Command | Load folder |
+| --- | --- | --- |
+| [Helper](babel-helper-extension-repo/README.md) | `npm --prefix babel-helper-extension-repo run build` | `babel-helper-extension-repo/babel-helper-extension/` |
+| [Gold Drafting](drafting/gold-drafting-extension/README.md) | `npm --prefix drafting/gold-drafting-extension run build` | `drafting/gold-drafting-extension/` |
+| [Review Helper](reviewer/review-interceptor-extension/README.md) | `npm --prefix reviewer/review-interceptor-extension run build:dev` | `reviewer/review-interceptor-extension/build/dev/` |
+| [Review Grader](reviewer/babel-review-grader-extension/README.md) | `npm --prefix reviewer/babel-review-grader-extension run build` | `reviewer/babel-review-grader-extension/` |
+
+Helper and Gold `build` commands bump the patch version. For a no-bump rebuild, use `build:core`; Helper also needs `sync:unpacked`. Reload extensions and refresh dashboard tabs after rebuilding. Review Grader requires Review Helper and the current backend. Configure user OpenRouter keys in extension settings for model requests.
+
+## Run the backend
 
 ```powershell
-git submodule sync --recursive
-git submodule update --init --recursive
+Copy-Item reviewer/review-backend/.env.runtime.example reviewer/review-backend/.env.runtime
+# Edit .env.runtime; replace the example admin credentials before starting.
+npm --prefix shared/babel-extension-platform run e2e:install:recreation
+bun run --cwd reviewer/review-backend build:lab
+bun run --cwd reviewer/review-backend dev
 ```
 
-## Archive Contract
+Backend: `http://127.0.0.1:3001`; health: `/health`; admin: `/templates-lab`. See [backend deployment](reviewer/review-backend/README.md) for credentials, data and production commands.
 
-- Non-product material lives outside this git workspace in a local archive directory.
-- Packaged extension ZIPs do not belong in this parent repo or in wrapper folders. The canonical distributables now live in per-repo GitHub Releases.
-- `reviewer/`, `drafting/`, and `shared/` group the products above. Review Grader source lives in this repository; it has no separate release or store publishing flow.
-- Child repos may own their own nested submodules when that structure belongs to the child. The parent should always bootstrap with `--recursive`.
+For the GPU service, follow [L0 Draft Engine installation](drafting/l0-draft-engine/README.md) (Docker/NVIDIA on Linux or Python/NVIDIA on Windows).
 
-See [`docs/repo-map.md`](docs/repo-map.md) for the ownership rules in one place.
+[Shared browser setup and commands](shared/babel-extension-platform/README.md) are separate from ordinary extension builds. Packaging and store publishing commands remain in each product README; ZIPs go to `.artifacts/`, not source control.
