@@ -7,7 +7,7 @@ await packExtension({ rootDir: root, skipBuild: true,
     const manifest = JSON.parse(readFileSync(resolve(root, 'manifest.json'), 'utf8'));
     const entries = ['manifest.json', 'options.html'].map(rel => ({ rel, full: resolve(root, rel) }))
       .concat(collectFiles(resolve(root, 'dist'), 'dist'), collectFiles(resolve(root, 'icons'), 'icons'));
-    const required = [manifest.options_page, 'dist/options.js',
+    const required = [manifest.options_page, 'dist/options.js', manifest.background.service_worker,
       ...manifest.content_scripts.flatMap(script => script.js), ...Object.values(manifest.icons ?? {})];
     const paths = new Set(entries.map(file => file.rel.replaceAll('\\', '/')));
     for (const file of required) if (!paths.has(file)) throw new Error(`Missing packaged asset: ${file}`);
