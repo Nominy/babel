@@ -16,9 +16,9 @@ Load this directory unpacked in `chrome://extensions`; bundles go to `dist/`. Re
 
 ## ZipEnhancer access
 
-Version 0.1.1 adds the background access provider for Gold Drafting and Babel Helper's audio enhancement. The manifest's pinned public key keeps this addon at `geagfgdjmeojbkbdjmbchkhjjfpaffbe`; do not remove or replace it. Only allowlisted extension identities can request the nonce-bound, heartbeat-maintained `audio-enhancement` grant. Web pages cannot grant access through DOM markers or `postMessage`.
+Version 0.1.2 supports both identities: Chrome Web Store `nkeipbljoogklaflfmkiffhflfdpjefc` and unpacked test `geagfgdjmeojbkbdjmbchkhjjfpaffbe`. The source manifest pins the test key; Store packaging removes that key and publishes to the existing Store item. Gold 0.2.46 and Helper 1.0.282 prefer the Store provider, fall back to the test provider, and support both installed together. Only allowlisted extension identities can request the nonce-bound, heartbeat-maintained `audio-enhancement` grant. Web pages cannot grant access through DOM markers or `postMessage`.
 
-Keep Grader installed and enabled for enhancement, including dedicated swarm GPU workers. Disabling/removing it cancels enhancement, restores Original audio and removes enhancement controls/settings; other Gold/Helper functionality is unchanged. Older content-only builds do not unlock enhancement: rebuild/reload this updated addon, including `dist/background.js`. Existing review grading still uses Review Helper and its backend configuration.
+Keep an updated Grader installed and enabled for enhancement, including dedicated swarm GPU workers. Removing the active provider cancels its work and restores Original audio; the client can reconnect to the other pinned provider. With neither available, enhancement controls/settings remain absent. Store Grader 0.1.0 has no access provider: update Grader, Gold and Helper together. For unpacked testing, build/load this source directory including `dist/background.js`, retaining its test key. Existing review grading still uses Review Helper and its backend configuration.
 
 
 ## Checks and packaging
@@ -29,6 +29,6 @@ npm test
 npm run build:zip
 ```
 
-The ZIP goes to `.artifacts/babel-review-grader-<version>.zip`. Builds do not bump versions. There is no store publishing automation.
+The Store ZIP goes to `.artifacts/babel-review-grader-<version>.zip`; it intentionally omits the test identity key. Builds do not bump versions. Publish with `npm run publish:cws -- --env-file PATH_TO_IGNORED_CWS_CONFIG --publish-type STAGED_PUBLISH --skip-review false`. Configure the existing Grader item `nkeipbljoogklaflfmkiffhflfdpjefc`, not Gold's item or the unpacked test ID, using the shared publisher's `CWS_ITEM_URL` or `CWS_PUBLISHER_ID`/`CWS_EXTENSION_ID` settings. Credentials remain outside source control.
 
 Browser integration uses `npm run e2e -- --grader` from the [shared platform](../../shared/babel-extension-platform/README.md#browser-checks).
