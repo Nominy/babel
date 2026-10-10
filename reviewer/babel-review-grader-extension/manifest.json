@@ -1,22 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Babel Review Grader",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyDUpNv455xEfmxgioSwPARuWAUwcaX8RBO6xeCpjXxSIiosurwqzFw0wTUoLipwB4tfeLi9RVv++tkgkXDlxC2NHao0YDvYZudX12rHjMPaJ4BhvJmNACLaQuq26axPYtwcOIGugpypdrWSLR1em0oui2dTsk588I8HYSIKIPK9r2UamVZDCkn+56vbYKMnNG/EoHngWXOTSjk4xDGKS+BSpG6SRtf1hkjqjsCdZaIqpsGCmjLctshbMl/gifIk0WHl6In//iQLFC/6KWwQHL1kJ8e2bDtu+rYikUB/NYvwZaDneqXVewcft9kOBVWKDQ/YaJ8rKPgEN+sTAPQEznQIDAQAB",
   "description": "Generate evidence-based category grades with Babel Review Helper. Preview and apply ratings while preserving feedback notes.",
   "permissions": [],
-  "background": {
-    "service_worker": "dist/background.js"
-  },
-  "externally_connectable": {
-    "ids": [
-      "dldjgploldmldipplklepcpjdjhehald",
-      "difidgnhacblcogknnfbeedghjpccohh",
-      "afpcopjodphibggidgicpjnkgnfhhemi",
-      "leabciebbjlkdncpfgaajkoapecdmfde",
-      "dcpicphhdpnliknilfmpbdedfndgmdjj"
-    ]
-  },
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
