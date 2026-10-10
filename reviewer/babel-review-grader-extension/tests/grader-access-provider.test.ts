@@ -5,6 +5,8 @@ import { readFileSync } from 'node:fs';
 import {
   createReviewGraderAccess,
   REVIEW_GRADER_EXTENSION_ID,
+  REVIEW_GRADER_TEST_EXTENSION_ID,
+  REVIEW_GRADER_EXTENSION_IDS,
   REVIEW_GRADER_ACCESS_PORT,
   REVIEW_GRADER_ACCESS_CLIENT_IDS,
   REVIEW_GRADER_ACCESS_TIMEOUT_MS,
@@ -74,8 +76,7 @@ const request = (nonce = 'a'.repeat(32)) => ({
   version: 1, type: 'request', capability: 'audio-enhancement', nonce, sequence: 0
 });
 
-function fixture(t: TestContext, id: string = REVIEW_GRADER_EXTENSION_ID) {
-  const clock = new Clock();
+function fixture(t: TestContext, id: string = REVIEW_GRADER_EXTENSION_ID, clock = new Clock()) {
   let lastErrorReads = 0;
   const runtime = {
     id,
@@ -92,34 +93,77 @@ function fixture(t: TestContext, id: string = REVIEW_GRADER_EXTENSION_ID) {
   return { clock, runtime, connect, dispose, lastErrorReads: () => lastErrorReads };
 }
 
-test('manifest pins the transport identity and admits only the five extension IDs, never web origins', () => {
+function linkedFixture(t: TestContext, identities: readonly string[]) {
+  const clock = new Clock();
+  const providers = Object.fromEntries(identities.map(id => [id, fixture(t, id, clock)]));
+  const calls: { id: string; port: Port }[] = [];
+  let nonce = 0;
+  const access = createReviewGraderAccess({
+    connect(id, info) {
+      assert.equal(info.name, REVIEW_GRADER_ACCESS_PORT);
+      const client = new Port({ id });
+      calls.push({ id, port: client });
+      const provider = providers[id];
+      if (!provider?.runtime.onConnectExternal.listeners.size) {
+        client.postMessage = () => {
+          client.closed = true;
+          client.onDisconnect.emit();
+        };
+      } else {
+        const remote = new Port({ id: REVIEW_GRADER_ACCESS_CLIENT_IDS[0] });
+        client.peer = remote;
+        remote.peer = client;
+        provider.runtime.onConnectExternal.emit(remote);
+      }
+      return client;
+    }
+  }, { timers: clock, createNonce: () => (++nonce).toString(16).padStart(32, '0') });
+  t.after(() => {
+    access.dispose();
+    assert.equal(clock.tasks.size, 0);
+    for (const { port } of calls) {
+      assert.equal(port.closed, true);
+      assert.equal(port.onMessage.listeners.size, 0);
+      assert.equal(port.onDisconnect.listeners.size, 0);
+      assert.equal(port.peer?.onMessage.listeners.size ?? 0, 0);
+      assert.equal(port.peer?.onDisconnect.listeners.size ?? 0, 0);
+    }
+  });
+  return { access, clock, providers, calls };
+}
+
+test('unpacked manifest pins the test identity and admits only the five extension IDs, never web origins', () => {
   const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
   const derivedId = createHash('sha256').update(Buffer.from(manifest.key, 'base64')).digest('hex').slice(0, 32)
     .replace(/[0-9a-f]/g, value => String.fromCharCode(97 + parseInt(value, 16)));
-  assert.equal(derivedId, REVIEW_GRADER_EXTENSION_ID);
+  assert.equal(derivedId, REVIEW_GRADER_TEST_EXTENSION_ID);
   assert.deepEqual(manifest.externally_connectable, { ids: [...REVIEW_GRADER_ACCESS_CLIENT_IDS] });
   assert.equal(manifest.permissions.includes('management'), false);
   assert.equal(manifest.background.service_worker, 'dist/background.js');
 });
 
-test('each allowlisted Helper or Gold gets only a nonce-bound explicit enhancement grant', t => {
-  const f = fixture(t);
-  for (const id of REVIEW_GRADER_ACCESS_CLIENT_IDS) {
-    const port = f.connect(id);
-    assert.equal(port.messages.length, 0);
-    const hello = request();
-    port.onMessage.emit(hello);
-    assert.deepEqual(port.messages, [{ ...hello, type: 'grant' }]);
-    const heartbeat = { ...hello, type: 'heartbeat', sequence: 1 };
-    port.onMessage.emit(heartbeat);
-    assert.deepEqual(port.messages[1], { ...heartbeat, type: 'grant' });
-    assert.equal(port.closed, false);
+test('both pinned providers grant each allowlisted Helper or Gold only nonce-bound enhancement access', t => {
+  for (const providerId of REVIEW_GRADER_EXTENSION_IDS) {
+    const f = fixture(t, providerId);
+    for (const id of REVIEW_GRADER_ACCESS_CLIENT_IDS) {
+      const port = f.connect(id);
+      assert.equal(port.messages.length, 0);
+      const hello = request();
+      port.onMessage.emit(hello);
+      assert.deepEqual(port.messages, [{ ...hello, type: 'grant' }]);
+      const heartbeat = { ...hello, type: 'heartbeat', sequence: 1 };
+      port.onMessage.emit(heartbeat);
+      assert.deepEqual(port.messages[1], { ...heartbeat, type: 'grant' });
+      assert.equal(port.closed, false);
+    }
+    f.dispose();
+    assert.equal(f.clock.tasks.size, 0);
   }
 });
 
 test('wrong senders, missing identities, wrong ports and incorrectly installed providers cannot grant', t => {
   const f = fixture(t);
-  for (const sender of [undefined, '', REVIEW_GRADER_EXTENSION_ID, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'https://dashboard.babel.audio']) {
+  for (const sender of [undefined, '', ...REVIEW_GRADER_EXTENSION_IDS, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'https://dashboard.babel.audio']) {
     const port = new Port(sender ? { id: sender } : undefined);
     f.runtime.onConnectExternal.emit(port);
     port.onMessage.emit(request());
@@ -132,8 +176,15 @@ test('wrong senders, missing identities, wrong ports and incorrectly installed p
   f.runtime.onConnectExternal.emit(wrongPort);
   assert.equal(wrongPort.closed, true);
   assert.equal(f.clock.tasks.size, 0);
-  const wrongInstallation = fixture(t, REVIEW_GRADER_ACCESS_CLIENT_IDS[0]);
-  assert.equal(wrongInstallation.runtime.onConnectExternal.listeners.size, 0);
+  for (const id of [REVIEW_GRADER_ACCESS_CLIENT_IDS[0], 'abkaoilaiihoinpajpmdepcmehphihoc', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '']) {
+    const wrongInstallation = fixture(t, id);
+    assert.equal(wrongInstallation.runtime.onConnectExternal.listeners.size, 0);
+    const port = wrongInstallation.connect();
+    port.onMessage.emit(request());
+    assert.equal(port.messages.length, 0);
+    assert.equal(port.onMessage.listeners.size, 0);
+    assert.equal(wrongInstallation.clock.tasks.size, 0);
+  }
 });
 
 test('initial malformed requests and unsolicited heartbeats fail closed without a grant', t => {
@@ -212,46 +263,87 @@ test('provider disposal revokes every lease, releases all listeners and timers, 
   assert.equal(f.clock.tasks.size, 0);
 });
 
-test('client and actual provider exchange grants, retain heartbeat leases and revoke on provider shutdown', async t => {
-  const f = fixture(t);
-  const clients: Port[] = [];
-  let nonce = 0;
-  const access = createReviewGraderAccess({
-    connect(id, info) {
-      assert.equal(id, REVIEW_GRADER_EXTENSION_ID);
-      assert.equal(info.name, REVIEW_GRADER_ACCESS_PORT);
-      const client = new Port();
-      const provider = new Port({ id: REVIEW_GRADER_ACCESS_CLIENT_IDS[0] });
-      client.peer = provider;
-      provider.peer = client;
-      clients.push(client);
-      f.runtime.onConnectExternal.emit(provider);
-      return client;
-    }
-  }, { timers: f.clock, createNonce: () => (++nonce).toString(16).padStart(32, '0') });
-  t.after(() => access.dispose());
+test('real providers support production-only, test-only, both and neither without delaying immediate fallback', async t => {
+  for (const identities of [
+    [REVIEW_GRADER_EXTENSION_ID],
+    [REVIEW_GRADER_TEST_EXTENSION_ID],
+    REVIEW_GRADER_EXTENSION_IDS,
+    []
+  ]) {
+    await t.test(identities.join(',') || 'neither', async child => {
+      const f = linkedFixture(child, identities);
+      const expected = identities.includes(REVIEW_GRADER_EXTENSION_ID) ? REVIEW_GRADER_EXTENSION_ID
+        : identities.includes(REVIEW_GRADER_TEST_EXTENSION_ID) ? REVIEW_GRADER_TEST_EXTENSION_ID : null;
+      assert.equal(await f.access.start(), expected !== null);
+      assert.deepEqual(f.calls.map(call => call.id), expected === REVIEW_GRADER_EXTENSION_ID
+        ? [REVIEW_GRADER_EXTENSION_ID] : REVIEW_GRADER_EXTENSION_IDS);
+      assert.equal(f.clock.now, 0);
+      const signal = await f.access.acquire();
+      if (expected) {
+        assert.ok(signal);
+        assert.equal(f.calls.at(-1)?.id, expected);
+        f.clock.advance(REVIEW_GRADER_ACCESS_HEARTBEAT_MS * 4);
+        assert.equal(signal.aborted, false);
+        assert.equal(await f.access.acquire(), signal);
+        assert.equal(f.calls.at(-1)?.port.messages.length, 5);
+        assert.equal(f.calls.length, expected === REVIEW_GRADER_EXTENSION_ID ? 1 : 2);
+      } else {
+        assert.equal(signal, null);
+        assert.equal(f.clock.tasks.size, 1);
+      }
+      f.access.dispose();
+      if (signal) assert.equal(signal.aborted, true);
+      assert.equal(f.clock.tasks.size, 0);
+    });
+  }
+});
+
+test('real provider revocation fails over in both directions and fresh retries prefer production', async t => {
+  const f = linkedFixture(t, REVIEW_GRADER_EXTENSION_IDS);
+  const production = f.providers[REVIEW_GRADER_EXTENSION_ID]!;
+  const testing = f.providers[REVIEW_GRADER_TEST_EXTENSION_ID]!;
   const changes: boolean[] = [];
-  access.subscribe(value => changes.push(value));
-  assert.equal(await access.start(), true);
-  const signal = await access.acquire();
-  assert.ok(signal);
-  f.clock.advance(REVIEW_GRADER_ACCESS_HEARTBEAT_MS * 4);
-  assert.equal(signal.aborted, false);
-  assert.equal(await access.acquire(), signal);
-  assert.equal(clients[0].messages.length, 5);
-  f.dispose();
-  assert.equal(signal.aborted, true);
-  assert.equal(access.isAvailable(), false);
-  assert.deepEqual(changes, [false, true, false]);
-  const disposeReplacement = installReviewGraderAccessProvider(f.runtime, f.clock);
+  f.access.subscribe(value => changes.push(value));
+  assert.equal(await f.access.start(), true);
+  const first = await f.access.acquire();
+  assert.ok(first);
+  production.dispose();
+  assert.equal(first.aborted, true);
+  const second = await f.access.acquire();
+  assert.ok(second);
+  assert.notEqual(second, first);
+  assert.equal(f.calls.at(-1)?.id, REVIEW_GRADER_TEST_EXTENSION_ID);
+  assert.deepEqual(changes, [false, true, false, true]);
+
+  const disposeProduction = installReviewGraderAccessProvider(production.runtime, f.clock);
+  t.after(disposeProduction);
+  f.clock.advance(REVIEW_GRADER_ACCESS_HEARTBEAT_MS * 2);
+  assert.equal(await f.access.acquire(), second);
+  assert.equal(f.calls.length, 2);
+  testing.dispose();
+  assert.equal(second.aborted, true);
+  const third = await f.access.acquire();
+  assert.ok(third);
+  assert.notEqual(third, second);
+  assert.equal(f.calls.at(-1)?.id, REVIEW_GRADER_EXTENSION_ID);
+  assert.deepEqual(changes, [false, true, false, true, false, true]);
+
+  disposeProduction();
+  assert.equal(third.aborted, true);
+  assert.equal(await f.access.acquire(), null);
+  assert.equal(f.calls.length, 4);
+  assert.equal(f.clock.tasks.size, 1);
+  const disposeReplacement = installReviewGraderAccessProvider(production.runtime, f.clock);
   t.after(disposeReplacement);
   f.clock.advance(REVIEW_GRADER_ACCESS_RETRY_MS);
-  const renewed = await access.acquire();
+  const renewed = await f.access.acquire();
   assert.ok(renewed);
-  assert.notEqual(renewed, signal);
+  assert.notEqual(renewed, third);
+  assert.equal(f.calls.at(-1)?.id, REVIEW_GRADER_EXTENSION_ID);
   assert.equal(renewed.aborted, false);
-  access.dispose();
+  f.access.dispose();
   assert.equal(renewed.aborted, true);
-  assert.equal(f.lastErrorReads(), 1);
+  assert.equal(production.lastErrorReads(), 1);
+  assert.equal(testing.lastErrorReads(), 0);
   assert.equal(f.clock.tasks.size, 0);
 });

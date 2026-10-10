@@ -1,5 +1,5 @@
 import {
-  REVIEW_GRADER_EXTENSION_ID,
+  REVIEW_GRADER_EXTENSION_IDS,
   REVIEW_GRADER_ACCESS_PORT,
   REVIEW_GRADER_ACCESS_VERSION,
   REVIEW_GRADER_ACCESS_CAPABILITY,
@@ -26,7 +26,7 @@ export function installReviewGraderAccessProvider(
     clearTimeout: handle => globalThis.clearTimeout(handle as number)
   }
 ): () => void {
-  if (runtime.id !== REVIEW_GRADER_EXTENSION_ID) return () => {};
+  if (!REVIEW_GRADER_EXTENSION_IDS.some(id => id === runtime.id)) return () => {};
   const sessions = new Set<(revoke: boolean) => void>();
   let disposed = false;
 
