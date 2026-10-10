@@ -14,12 +14,7 @@ npm run build
 
 Load this directory unpacked in `chrome://extensions`; bundles go to `dist/`. Reload Review Helper and refresh the Babel dashboard. Configure the backend address and OpenRouter key in Review Helper, not this addon. Use Review Helper's development build for a local backend.
 
-## ZipEnhancer access
-
-Version 0.1.2 supports both identities: Chrome Web Store `nkeipbljoogklaflfmkiffhflfdpjefc` and unpacked test `geagfgdjmeojbkbdjmbchkhjjfpaffbe`. The source manifest pins the test key; Store packaging removes that key and publishes to the existing Store item. Gold 0.2.46 and Helper 1.0.282 prefer the Store provider, fall back to the test provider, and support both installed together. Only allowlisted extension identities can request the nonce-bound, heartbeat-maintained `audio-enhancement` grant. Web pages cannot grant access through DOM markers or `postMessage`.
-
-Keep an updated Grader installed and enabled for enhancement, including dedicated swarm GPU workers. Removing the active provider cancels its work and restores Original audio; the client can reconnect to the other pinned provider. With neither available, enhancement controls/settings remain absent. Store Grader 0.1.0 has no access provider: update Grader, Gold and Helper together. For unpacked testing, build/load this source directory including `dist/background.js`, retaining its test key. Existing review grading still uses Review Helper and its backend configuration.
-
+Review Grader is independent of Gold/Helper audio enhancement. It is not required to enable ZipEnhancer; its former access-provider background worker has been removed.
 
 ## Checks and packaging
 

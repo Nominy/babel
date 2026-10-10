@@ -15,7 +15,7 @@ try {
         { rel: 'manifest.json', full: tempManifestPath },
         { rel: 'options.html', full: resolve(root, 'options.html') }
       ].concat(collectFiles(resolve(root, 'dist'), 'dist'), collectFiles(resolve(root, 'icons'), 'icons'));
-      const required = [manifest.options_page, 'dist/options.js', manifest.background.service_worker,
+      const required = [manifest.options_page, 'dist/options.js',
         ...manifest.content_scripts.flatMap(script => script.js), ...Object.values(manifest.icons ?? {})];
       const paths = new Set(entries.map(file => file.rel.replaceAll('\\', '/')));
       for (const file of required) if (!paths.has(file)) throw new Error(`Missing packaged asset: ${file}`);
