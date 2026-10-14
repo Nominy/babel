@@ -55,3 +55,33 @@ test('snapshot identity ignores capture time but includes transcript changes', (
   const changed = { ...state, annotations: [{ ...state.annotations[0], content: 'Changed' }] };
   assert.notEqual(gradingSnapshotKey(state, state), gradingSnapshotKey(state, changed));
 });
+
+test('disabled fieldset inherited state is not mistaken for a writable feedback form', async () => {
+  const { doc, root } = fixture();
+  const fieldset = doc.createElement('fieldset');
+  root.before(fieldset); fieldset.append(root); fieldset.disabled = true;
+  assert.equal(getWritableForm(doc), null);
+  await assert.rejects(applyGrades(grades, () => true, doc), /writable/);
+  assert.equal(root.querySelectorAll('[aria-checked="true"][id$="-1"]').length, 5);
+});
+
+test('a remounted feedback form interrupts application rather than applying to replacement controls', async () => {
+  const { doc, root } = fixture();
+  doc.getElementById('timestampAccuracy-2')!.addEventListener('click', () => root.replaceWith(root.cloneNode(true)));
+  await assert.rejects(applyGrades(grades, () => true, doc), /changed/);
+  assert.equal(doc.getElementById('punctuationFormatting-1')?.getAttribute('aria-checked'), 'true');
+});
+
+test('duplicate grade categories are rejected before any click', async () => {
+  const { doc, root } = fixture();
+  await assert.rejects(applyGrades([...grades.slice(0, 4), grades[0]], () => true, doc), /five/);
+  assert.equal(root.querySelectorAll('[aria-checked="true"][id$="-1"]').length, 5);
+});
+
+test('snapshot identity includes track and time edits but not rating notes', () => {
+  const state = { actionId: 'a', actionLevel: 2, annotations: [{ id: 's', content: 'Hello', processedRecordingId: 'track', startTimeInSeconds: 0, endTimeInSeconds: 1 }] };
+  for (const update of [{ processedRecordingId: 'other' }, { startTimeInSeconds: 0.5 }, { endTimeInSeconds: 2 }]) {
+    const changed = { ...state, annotations: [{ ...state.annotations[0], ...update }] };
+    assert.notEqual(gradingSnapshotKey(state, state), gradingSnapshotKey(state, changed));
+  }
+});
