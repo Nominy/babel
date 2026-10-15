@@ -1,7 +1,8 @@
 import { cancelHelperGrade } from './helper-client';
 import { createComponent as c, themeRoot } from '@nominy/babel-extension-frontend';
-import { registerDomLifecycle, gradingSnapshotKey, validGradeScores, GRADE_CATEGORIES } from '@nominy/babel-babel-runtime';
-import { getSnapshot, requestHelper } from './helper-client';
+import { registerDomLifecycle, GRADE_CATEGORIES } from '@nominy/babel-babel-runtime';
+import { getSnapshot, requestHelper, sameSnapshot, validateResult } from './helper-client';
+import { registerReviewAddon } from './review-addon';
 import { applyGrades, getWritableForm } from './form';
 import type { Grade, GradingResult, Snapshot } from './types';
 
@@ -18,6 +19,7 @@ let cards: HTMLElement;
 let progress: HTMLElement;
 let generate: HTMLButtonElement;
 let apply: HTMLButtonElement;
+const checkReviewAddon = registerReviewAddon();
 
 function message(text: string, error = false) {
   status.textContent = text;
@@ -35,7 +37,7 @@ function cancel() {
   activeRequest = '';
   busy = false;
 }
-function close() { cancel(); dialog?.close(); dialog?.remove(); dialog = null; result = null; snapshot = null; }
+function close() { cancel(); dialog?.close(); dialog?.remove(); dialog = null; }
 
 function renderGrades(grades: Grade[]) {
   cards.replaceChildren();
@@ -83,8 +85,10 @@ async function generateGrades() {
     const response = await requestHelper('grade', { reviewActionId: captured.reviewActionId, original: captured.original, current: captured.current }, activeRequest);
     if (revision !== currentRevision || window.location.href !== currentRoute || !dialog?.open) return;
     if (!response?.ok) throw new Error(response?.error || 'The grader did not return a result.');
-    if (!validGradeScores(response.result?.grades) || response.result.reviewActionId !== captured.reviewActionId
-      || response.result.originalActionId !== captured.original.actionId) throw new Error('Grades belong to a different review or are incomplete.');
+    validateResult(response.result, captured);
+    const live = await getSnapshot();
+    if (revision !== currentRevision || window.location.href !== currentRoute || !dialog?.open) return;
+    if (!sameSnapshot(captured, live)) throw new Error('The transcript changed since grading. Generate new grades before applying.');
     result = response.result;
     renderGrades(result!.grades);
     message('Review the suggested grades. You can adjust any score before applying.');
@@ -99,16 +103,14 @@ async function generateGrades() {
 async function applyResult() {
   if (busy || !result || !snapshot) return;
   const currentRevision = ++revision;
-  const originalKey = gradingSnapshotKey(snapshot.original, snapshot.current);
+  const expectedSnapshot = snapshot;
   const currentRoute = window.location.href;
-  const expectedAction = snapshot.reviewActionId;
   const grades = result.grades.map(({ category, score }) => ({ category, score }));
   setBusy(true); message('Checking that this review has not changed…');
   try {
     const current = await getSnapshot();
     if (revision !== currentRevision || !dialog?.open) return;
-    if (currentRoute !== window.location.href || current.reviewActionId !== expectedAction
-      || gradingSnapshotKey(current.original, current.current) !== originalKey) {
+    if (currentRoute !== window.location.href || !sameSnapshot(expectedSnapshot, current)) {
       result = null; snapshot = null; cards.replaceChildren();
       throw new Error('The transcript changed since grading. Generate new grades before applying.');
     }
@@ -123,7 +125,6 @@ async function applyResult() {
 
 function open() {
   if (dialog?.open) return;
-  result = null; snapshot = null;
   dialog = c('dialog', { tag: 'dialog' }) as HTMLDialogElement;
   themeRoot(dialog, ACCENT);
   dialog.id = 'babel-review-grader-dialog';
@@ -140,7 +141,30 @@ function open() {
   generate = c('button', { text: 'Generate grades', variant: 'primary' }) as HTMLButtonElement;
   apply = c('button', { text: 'Apply grades', variant: 'primary' }) as HTMLButtonElement;
   generate.addEventListener('click', () => void generateGrades()); apply.addEventListener('click', () => void applyResult());
-  apply.disabled = true;
+  apply.disabled = !result;
+  if (result && snapshot) {
+    const retained = result;
+    const actionId = snapshot.reviewActionId;
+    const currentRevision = revision;
+    apply.disabled = true;
+    message('Checking that this is the same review…');
+    void getSnapshot().then(current => {
+      if (revision !== currentRevision || result !== retained || !dialog?.open) return;
+      if (current.reviewActionId !== actionId) {
+        result = null; snapshot = null;
+        message('The review changed. Generate grades for the current task.');
+        return;
+      }
+      renderGrades(retained.grades);
+      generate.textContent = 'Regenerate';
+      apply.disabled = false;
+      message('Review the suggested grades. Applying will check that this transcript has not changed.');
+    }).catch(error => {
+      if (revision !== currentRevision || result !== retained || !dialog?.open) return;
+      result = null; snapshot = null;
+      message(error instanceof Error ? error.message : String(error), true);
+    });
+  }
   dialog.append(c('header', { children: [title, closeButton] }), c('body', { children: [status, progress, cards] }),
     c('footer', { children: [generate, apply] }));
   dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
@@ -148,8 +172,10 @@ function open() {
 }
 
 function ensure() {
-  if (route !== window.location.href) { route = window.location.href; close(); }
+  checkReviewAddon();
+  if (route !== window.location.href) { route = window.location.href; close(); result = null; snapshot = null; }
   const form = getWritableForm();
+  if (!form && document.getElementById('wordAccuracy-1')) { result = null; snapshot = null; }
   const existing = document.getElementById('babel-review-grader-button');
   if (!form || !form.getClientRects().length) { existing?.remove(); if (dialog?.open) close(); return; }
   if (existing && form.contains(existing)) return;
@@ -161,5 +187,8 @@ function ensure() {
   if (helper) helper.after(button); else form.prepend(button);
 }
 
+window.addEventListener('hashchange', ensure);
+window.addEventListener('popstate', ensure);
+window.addEventListener('pagehide', () => { close(); result = null; snapshot = null; });
 registerDomLifecycle(ensure);
 ensure();

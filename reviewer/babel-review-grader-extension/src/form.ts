@@ -7,8 +7,8 @@ export function getWritableForm(doc: Document = document): HTMLElement | null {
     if (GRADE_PREFIXES.every(prefix => root!.querySelector(`[id="${prefix}-1"]`))) {
       const notes = root.querySelectorAll<HTMLTextAreaElement>('textarea[placeholder="Provide specific feedback..."]');
       const radios = root.querySelectorAll<HTMLElement>('[role="radio"]');
-      if (notes.length < 5 || [...notes].some(note => note.disabled || note.readOnly)
-        || [...radios].some(radio => radio.hasAttribute('disabled') || radio.getAttribute('aria-disabled') === 'true')) return null;
+      if (notes.length < 5 || [...notes].some(note => note.disabled || note.readOnly || note.matches(':disabled'))
+        || [...radios].some(radio => radio.matches(':disabled') || radio.hasAttribute('disabled') || radio.getAttribute('aria-disabled') === 'true')) return null;
       return root;
     }
     root = root.parentElement;
@@ -33,7 +33,7 @@ export async function applyGrades(grades: GradeScore[], stillCurrent: () => bool
       if (getWritableForm(doc) !== root || !root.isConnected || !stillCurrent()) throw new Error('The review changed while applying grades. Check the current form before retrying.');
       if (selected(target)) continue;
       const radio = root.querySelector<HTMLElement>(`[id="${target.prefix}-${target.score}"]`);
-      if (!radio || radio.hasAttribute('disabled') || radio.getAttribute('aria-disabled') === 'true') throw new Error(`The ${target.category} rating is not writable.`);
+      if (!radio || radio.matches(':disabled') || radio.hasAttribute('disabled') || radio.getAttribute('aria-disabled') === 'true') throw new Error(`The ${target.category} rating is not writable.`);
       radio.click();
       await new Promise(resolve => setTimeout(resolve, 90));
     }

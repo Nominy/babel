@@ -16,6 +16,13 @@ Load this directory unpacked in `chrome://extensions`; bundles go to `dist/`. Re
 
 Review Grader is independent of Gold/Helper audio enhancement. It is not required to enable ZipEnhancer; its former access-provider background worker has been removed.
 
+## Grading a review
+
+With this addon installed, Magic Review prepares grades alongside comments and applies them after feedback. For a manual preview, open the native feedback form, choose **Grade review**, then **Generate grades**. Adjust any of the five category scores before applying. Both workflows use Review Helper's configured backend and key.
+
+Completed previews and manual overrides survive closing and reopening the dialog for the same task. Closing during generation cancels the request; navigation and readonly feedback clear the preview. Reopening checks task identity, and applying checks the current native transcript again, including unsaved text, tags, timing, tracks and metadata. If it changed, generate new grades. Applying changes ratings only, preserves feedback notes and never submits the review.
+
+
 ## Checks and packaging
 
 ```sh
@@ -24,6 +31,6 @@ npm test
 npm run build:zip
 ```
 
-The Store ZIP goes to `.artifacts/babel-review-grader-<version>.zip`; it intentionally omits the test identity key. Builds do not bump versions. Publish with `npm run publish:cws -- --env-file PATH_TO_IGNORED_CWS_CONFIG --publish-type STAGED_PUBLISH --skip-review false`. Configure the existing Grader item `nkeipbljoogklaflfmkiffhflfdpjefc`, not Gold's item or the unpacked test ID, using the shared publisher's `CWS_ITEM_URL` or `CWS_PUBLISHER_ID`/`CWS_EXTENSION_ID` settings. Credentials remain outside source control.
+The Store ZIP goes to `.artifacts/babel-review-grader-<version>.zip`; it intentionally omits the test identity key. Builds do not bump versions. Publish with `npm run publish:cws -- --env-file PATH_TO_IGNORED_CWS_CONFIG --publish-type DEFAULT_PUBLISH --skip-review false` for automatic publication after approval. Configure the existing Grader item `nkeipbljoogklaflfmkiffhflfdpjefc`, not Gold's item or the unpacked test ID, using the shared publisher's `CWS_ITEM_URL` or `CWS_PUBLISHER_ID`/`CWS_EXTENSION_ID` settings. Credentials remain outside source control.
 
 Browser integration uses `npm run e2e -- --grader` from the [shared platform](../../shared/babel-extension-platform/README.md#browser-checks).
